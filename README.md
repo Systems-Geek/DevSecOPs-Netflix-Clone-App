@@ -15,25 +15,25 @@ sudo apt update && sudo apt upgrade -y <br>
 git clone https://github.com/Systems-Geek/DevSecOps-Netflix-Clone.git <br>
 cd DevSecOps-Netflix-Clone <br>
 
-Replace <your-username> with your GitHub handle.
 
 ## 🐳 Step 3: Install Docker and Launch the App
  
  # Install Docker and configure permissions:
 
-sudo apt install docker.io -y
-sudo usermod -aG docker $USER
-newgrp docker
-sudo chmod 777 /var/run/docker.sock
+sudo apt install docker.io -y<br>
+sudo usermod -aG docker $USER<br>
+newgrp docker<br>
+sudo chmod 777 /var/run/docker.sock<br>
 
 # Try building the container:
 
+docker build -t netflix .<br>
+docker run -d --name netflix -p 8081:80 netflix:latest<br>
 
-docker build -t netflix .
-docker run -d --name netflix -p 8081:80 netflix:latest
 The app may show an error due to a missing API key.
 
 ## 🔑 Step 4: Get and Add TMDB API Key
+
 Sign up at TMDB.
 
 Generate an API key under account settings.
@@ -44,47 +44,53 @@ docker build --build-arg TMDB_V3_API_KEY=<your_api_key> -t netflix .
 
 
 ### 🔐 Phase 2: Static Analysis and Image Scanning
+
 📊 Install SonarQube
 
 
-docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
-Access at: http://localhost:9000
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community<br>
+Access at: http://localhost:9000<br>
+
 Login: admin / admin
 
 # 🔍 Install Trivy for Image Scanning
 
-sudo apt install wget apt-transport-https gnupg lsb-release -y
+sudo apt install wget apt-transport-https gnupg lsb-release -y<br>
 wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
-sudo apt update
-sudo apt install trivy -y
+echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list<br>
+sudo apt update<br>
+sudo apt install trivy -y<br>
 
 
 Scan the Docker image:
 
-trivy image netflix
+trivy image netflix<br>
 
 ### ⚙️ Phase 3: Jenkins CI/CD Pipeline
+
 # 🧩 Install Jenkins on Local Machine
 
-sudo apt update
-sudo apt install fontconfig openjdk-17-jre -y
+sudo apt update<br>
+sudo apt install fontconfig openjdk-17-jre -y<br>
 
 # Add Jenkins repo and key
-wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key<br>
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null<br>
 
 # Install Jenkins
 
 
-sudo apt update
-sudo apt install jenkins -y
-sudo systemctl start jenkins
-sudo systemctl enable jenkins
+sudo apt update<br>
+sudo apt install jenkins -y<br>
+sudo systemctl start jenkins<br>
+sudo systemctl enable jenkins<br>
+
 Access Jenkins via: http://localhost:8080
 
 
 # 🔧 Jenkins Configuration
+
 Install the following plugins:
 
 Eclipse Temurin Installer
@@ -190,29 +196,30 @@ pipeline {
 }
 
 
+
 ### 📈 Phase 4: Monitoring with Prometheus + Grafana
 
  # 🛠️ Install Prometheus
 
 Download and configure:
 
-wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
-tar -xvf prometheus-2.47.1.linux-amd64.tar.gz
-sudo mv prometheus-2.47.1.linux-amd64 /opt/prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz<br>
+tar -xvf prometheus-2.47.1.linux-amd64.tar.gz<br>
+sudo mv prometheus-2.47.1.linux-amd64 /opt/prometheus<br>
 
 
 # Create Prometheus user and systemd service:
 
 
-sudo useradd --no-create-home --shell /bin/false prometheus
-sudo nano /etc/systemd/system/prometheus.service
+sudo useradd --no-create-home --shell /bin/false prometheus<br>
+sudo nano /etc/systemd/system/prometheus.service<br>
 
 
 # Paste and edit config as needed, then enable:
 
-sudo systemctl daemon-reexec
-sudo systemctl enable prometheus
-sudo systemctl start prometheus
+sudo systemctl daemon-reexec<br>
+sudo systemctl enable prometheus<br>
+sudo systemctl start prometheus<br>
 
 Prometheus: http://localhost:9090
 
@@ -224,11 +231,11 @@ Repeat similar steps to install node_exporter, then access metrics at http://loc
 
 
 wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
-echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
-sudo apt update
-sudo apt install grafana -y
-sudo systemctl enable grafana-server
-sudo systemctl start grafana-server
+echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee /etc/apt/sources.list.d/grafana.list<br>
+sudo apt update<br>
+sudo apt install grafana -y<br>
+sudo systemctl enable grafana-server<br>
+sudo systemctl start grafana-server<br>
 
 Access Grafana at: http://localhost:3000
 Default: admin / admin

@@ -11,12 +11,10 @@ Make sure your local Ubuntu server is up and running. SSH into it or access it d
 
 Update the package list and clone your Netflix Clone application:
 
-bash
-Copy
-Edit
-sudo apt update && sudo apt upgrade -y
-git clone https://github.com/<your-username>/DevSecOps-Netflix-Clone.git
-cd DevSecOps-Netflix-Clone
+sudo apt update && sudo apt upgrade -y <br>
+git clone https://github.com/Systems-Geek/DevSecOps-Netflix-Clone.git <br>
+cd DevSecOps-Netflix-Clone <br>
+
 Replace <your-username> with your GitHub handle.
 
 ## 🐳 Step 3: Install Docker and Launch the App

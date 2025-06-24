@@ -13,9 +13,9 @@ Update the package list and clone your Netflix Clone application:
 
 ```bash
 
-sudo apt update && sudo apt upgrade -y <br>
-git clone https://github.com/Systems-Geek/DevSecOps-Netflix-Clone.git <br>
-cd DevSecOps-Netflix-Clone <br>
+sudo apt update && sudo apt upgrade -y 
+git clone https://github.com/Systems-Geek/DevSecOps-Netflix-Clone-App.git
+cd DevSecOps-Netflix-Clone 
 ```
 
 
@@ -23,16 +23,16 @@ cd DevSecOps-Netflix-Clone <br>
  
  # Install Docker and configure permissions:
 ```
-sudo apt install docker.io -y<br>
-sudo usermod -aG docker $USER<br>
-newgrp docker<br>
-sudo chmod 777 /var/run/docker.sock<br>
+sudo apt install docker.io -y
+sudo usermod -aG docker $USER
+newgrp docker
+sudo chmod 777 /var/run/docker.sock
 ```
 # Try building the container:
 
 ```
-docker build -t netflix .<br>
-docker run -d --name netflix -p 8081:80 netflix:latest<br>
+docker build -t netflix .
+docker run -d --name netflix -p 8081:80 netflix:latest
 ```
 
 The app may show an error due to a missing API key.
@@ -53,8 +53,8 @@ docker build --build-arg TMDB_V3_API_KEY=<your_api_key> -t netflix .
 📊 Install SonarQube
 
 ```
-docker run -d --name sonar -p 9000:9000 sonarqube:lts-community<br>
-Access at: http://localhost:9000<br>
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+Access at: http://localhost:9000
 ```
 
 Login: admin / admin
@@ -62,17 +62,17 @@ Login: admin / admin
 # 🔍 Install Trivy for Image Scanning
 
 ```
-sudo apt install wget apt-transport-https gnupg lsb-release -y<br>
+sudo apt install wget apt-transport-https gnupg lsb-release -y
 wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list<br>
-sudo apt update<br>
-sudo apt install trivy -y<br>
+echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
+sudo apt update
+sudo apt install trivy -y
 ```
 
 Scan the Docker image:
 
 ```
-trivy image netflix<br>
+trivy image netflix
 ```
 
 ### ⚙️ Phase 3: Jenkins CI/CD Pipeline
@@ -80,22 +80,22 @@ trivy image netflix<br>
 # 🧩 Install Jenkins on Local Machine
 
 ```
-sudo apt update<br>
-sudo apt install fontconfig openjdk-17-jre -y<br>
+sudo apt update
+sudo apt install fontconfig openjdk-17-jre -y
 ```
 
 # Add Jenkins repo and key
 ```
-wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key<br>
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null<br>
+wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 ```
 # Install Jenkins
 
 ```
-sudo apt update<br>
-sudo apt install jenkins -y<br>
-sudo systemctl start jenkins<br>
-sudo systemctl enable jenkins<br>
+sudo apt update
+sudo apt install jenkins -y
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
 ```
 
 Access Jenkins via: http://localhost:8080
@@ -147,7 +147,7 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/<your-username>/DevSecOps-Netflix-Clone.git'
+                git branch: 'main', url: 'https://github.com/Systems-Geek/DevSecOps-Netflix-Clone-App.git'
             }
         }
         stage('SonarQube Scan') {
@@ -155,8 +155,8 @@ pipeline {
                 withSonarQubeEnv('sonar-server') {
                     sh '''
                     $SCANNER_HOME/bin/sonar-scanner \
-                    -Dsonar.projectKey=NetflixClone \
-                    -Dsonar.projectName=NetflixClone
+                    -Dsonar.projectKey=netflix \
+                    -Dsonar.projectName=netflix
                     '''
                 }
             }
@@ -164,7 +164,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
             }
         }
@@ -216,24 +216,24 @@ pipeline {
 Download and configure:
 
 ```
-wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz<br>
-tar -xvf prometheus-2.47.1.linux-amd64.tar.gz<br>
-sudo mv prometheus-2.47.1.linux-amd64 /opt/prometheus<br>
+wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
+tar -xvf prometheus-2.47.1.linux-amd64.tar.gz
+sudo mv prometheus-2.47.1.linux-amd64 /opt/prometheus
 ```
 
 # Create Prometheus user and systemd service:
 
 ```
-sudo useradd --no-create-home --shell /bin/false prometheus<br>
-sudo nano /etc/systemd/system/prometheus.service<br>
+sudo useradd --no-create-home --shell /bin/false prometheus
+sudo nano /etc/systemd/system/prometheus.service
 ```
 
 # Paste and edit config as needed, then enable:
 
 ```
-sudo systemctl daemon-reexec<br>
-sudo systemctl enable prometheus<br>
-sudo systemctl start prometheus<br>
+sudo systemctl daemon-reexec
+sudo systemctl enable prometheus
+sudo systemctl start prometheus
 ```
 
 Prometheus: http://localhost:9090
@@ -248,10 +248,10 @@ Repeat similar steps to install node_exporter, then access metrics at http://loc
 
 wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
 echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee /etc/apt/sources.list.d/grafana.list<br>
-sudo apt update<br>
-sudo apt install grafana -y<br>
-sudo systemctl enable grafana-server<br>
-sudo systemctl start grafana-server<br>
+sudo apt update
+sudo apt install grafana -y
+sudo systemctl enable grafana-server
+sudo systemctl start grafana-server
 ```
 
 Access Grafana at: http://localhost:3000
